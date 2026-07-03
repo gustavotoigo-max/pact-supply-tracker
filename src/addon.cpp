@@ -44,6 +44,7 @@ namespace
     AddonDefinition_t AddonDef{};
     Texture_t* BarrelTexture = nullptr;
     Texture_t* BarrelFilledTexture = nullptr;
+    float TextureRetryTimer = 0.0f;
 
     constexpr const char* BarrelTextureId = "PactSupply.Barrel";
     constexpr const char* BarrelFilledTextureId = "PactSupply.BarrelFilled";
@@ -133,7 +134,7 @@ namespace
 
         file << ButtonPosition.x << ' ' << ButtonPosition.y << '\n';
     }
-    void LoadTextures()
+    void LoadTextures(bool logFailures = true)
     {
         if (addon::Api == nullptr || addon::Api->Textures_GetOrCreateFromResource == nullptr)
         {
@@ -151,12 +152,12 @@ namespace
         BarrelTexture = addon::Api->Textures_GetOrCreateFromResource(BarrelTextureId, IDB_BARREL, module);
         BarrelFilledTexture = addon::Api->Textures_GetOrCreateFromResource(BarrelFilledTextureId, IDB_BARREL_HOVER, module);
 
-        if (BarrelTexture == nullptr)
+        if (logFailures && BarrelTexture == nullptr)
         {
             addon::Log(LOGL_WARNING, "failed to load embedded barrel texture");
         }
 
-        if (BarrelFilledTexture == nullptr)
+        if (logFailures && BarrelFilledTexture == nullptr)
         {
             addon::Log(LOGL_WARNING, "failed to load embedded barrel hover texture");
         }
@@ -441,6 +442,10 @@ namespace
                     ImVec2(1.0f, 1.0f),
                     IM_COL32_WHITE);
             }
+            else
+            {
+                DrawBarrel(ImGui::GetWindowDrawList(), screenPosition, barrelSize, IM_COL32(202, 77, 213, 255));
+            }
             const bool altDown = ImGui::GetIO().KeyAlt;
 
             if (hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
@@ -501,6 +506,16 @@ namespace
             }
         }
 
+        if (BarrelTexture == nullptr || BarrelFilledTexture == nullptr)
+        {
+            TextureRetryTimer -= deltaTime;
+            if (TextureRetryTimer <= 0.0f)
+            {
+                LoadTextures(false);
+                TextureRetryTimer = 0.5f;
+            }
+        }
+
         RenderBarrelButton();
         RenderNotification();
     }
@@ -557,7 +572,7 @@ extern "C" __declspec(dllexport) AddonDefinition_t* GetAddonDef()
     AddonDef.Signature = AddonSignature;
     AddonDef.APIVersion = NEXUS_API_VERSION;
     AddonDef.Name = addon::Name;
-    AddonDef.Version = AddonVersion_t{1, 2, 1, 0};
+    AddonDef.Version = AddonVersion_t{1, 2, 2, 0};
     AddonDef.Author = "Nahar.5349";
     AddonDef.Description = "Track the Pact Supply waypoints";
     AddonDef.Load = AddonLoad;

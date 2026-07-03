@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 project(PactSupplyTracker
-    VERSION 1.2.1.0
+    VERSION 1.2.2.0
     LANGUAGES CXX
 )
 
@@ -22,6 +22,10 @@ if(MSVC)
     target_compile_options(imgui PRIVATE /W0)
 endif()
 
+
+set_source_files_properties(resources.rc PROPERTIES
+    OBJECT_DEPENDS "${CMAKE_SOURCE_DIR}/barrel.png;${CMAKE_SOURCE_DIR}/barrel_hover.png"
+)
 add_library(gw2_nexus_addon SHARED
     src/addon.cpp
     resources.rc
