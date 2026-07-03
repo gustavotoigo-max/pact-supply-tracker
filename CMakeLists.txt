@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 project(PactSupplyTracker
-    VERSION 1.2.3
+    VERSION 1.2.0.0
     LANGUAGES CXX
 )
 
@@ -66,6 +66,7 @@ set_target_properties(gw2_nexus_addon PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
 
 
 
