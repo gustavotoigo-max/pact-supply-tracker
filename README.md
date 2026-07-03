@@ -47,7 +47,7 @@ git submodule update --init --recursive
 
 Dependencies are tracked as git submodules:
 
-- [Nexus API](https://github.com/RaidcoreGG/nexus-api)
+- [Nexus API](https://github.com/RaidcoreGG/Nexus-API)
 - [Dear ImGui](https://github.com/ocornut/imgui)
 
 The main repository stores only the submodule gitlinks and `.gitmodules`; it does not vendor the Nexus or ImGui source files.
@@ -85,3 +85,4 @@ build/msvc-release/bin/Release/pact_supply_tracker.dll
 - Built on the [Nexus](https://raidcore.gg/Nexus) addon framework by Raidcore.
 
 > *Guild Wars 2 and all associated trademarks are property of ArenaNet / NCSoft. This is an unofficial, fan-made addon.*
+

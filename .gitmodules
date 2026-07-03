@@ -1,6 +1,7 @@
 [submodule "dependencies/nexus-api"]
 	path = dependencies/nexus-api
-	url = https://github.com/RaidcoreGG/nexus-api.git
+	url = https://github.com/RaidcoreGG/Nexus-API.git
 [submodule "dependencies/imgui"]
 	path = dependencies/imgui
 	url = https://github.com/ocornut/imgui.git
+
