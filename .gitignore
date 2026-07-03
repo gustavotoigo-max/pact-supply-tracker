@@ -1,0 +1,26 @@
+build/
+.vs/
+out/
+work/
+backups/
+
+# Local source/input files kept only for porting or asset generation.
+Data.h
+analisar_1.cpp
+roxo.PNG
+src/addon_full.cpp
+
+dependencies/*
+!dependencies/
+!dependencies/nexus-api
+!dependencies/nexus-api/
+!dependencies/imgui
+!dependencies/imgui/
+*.user
+*.suo
+*.dll
+*.exp
+*.ilk
+*.lib
+*.pdb
+*.map

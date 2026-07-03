@@ -1,0 +1,4 @@
+#include "include/resource.h"
+
+IDB_BARREL PNG "barrel.png"
+IDB_BARREL_HOVER PNG "barrel_hover.png"
