@@ -6,6 +6,8 @@
 #include <imgui.h>
 
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <cstring>
 #include <ctime>
 #include <random>
@@ -45,6 +47,8 @@ namespace
 
     constexpr const char* BarrelTextureId = "PactSupply.Barrel";
     constexpr const char* BarrelFilledTextureId = "PactSupply.BarrelFilled";
+    constexpr const char* SettingsDirectoryName = "PactSupplyTracker";
+    constexpr const char* SettingsFileName = "settings.ini";
 
     void ConfigureImGui(AddonAPI_t* api);
 
@@ -62,6 +66,73 @@ namespace
         return module;
     }
 
+    std::filesystem::path GetSettingsPath()
+    {
+        if (addon::Api == nullptr || addon::Api->Paths_GetAddonDirectory == nullptr)
+        {
+            return {};
+        }
+
+        const char* directory = addon::Api->Paths_GetAddonDirectory(SettingsDirectoryName);
+        if (directory == nullptr || directory[0] == '\0')
+        {
+            return {};
+        }
+
+        return std::filesystem::path(directory) / SettingsFileName;
+    }
+
+    void LoadSettings()
+    {
+        const std::filesystem::path path = GetSettingsPath();
+        if (path.empty())
+        {
+            addon::Log(LOGL_WARNING, "settings path unavailable");
+            return;
+        }
+
+        std::ifstream file(path);
+        if (!file.is_open())
+        {
+            return;
+        }
+
+        float x = ButtonPosition.x;
+        float y = ButtonPosition.y;
+        file >> x >> y;
+
+        if (file.good() || file.eof())
+        {
+            ButtonPosition = ImVec2(x, y);
+        }
+    }
+
+    void SaveSettings()
+    {
+        const std::filesystem::path path = GetSettingsPath();
+        if (path.empty())
+        {
+            addon::Log(LOGL_WARNING, "settings path unavailable");
+            return;
+        }
+
+        std::error_code error;
+        std::filesystem::create_directories(path.parent_path(), error);
+        if (error)
+        {
+            addon::Log(LOGL_WARNING, "failed to create settings directory");
+            return;
+        }
+
+        std::ofstream file(path, std::ios::trunc);
+        if (!file.is_open())
+        {
+            addon::Log(LOGL_WARNING, "failed to open settings file");
+            return;
+        }
+
+        file << ButtonPosition.x << ' ' << ButtonPosition.y << '\n';
+    }
     void LoadTextures()
     {
         if (addon::Api == nullptr || addon::Api->Textures_GetOrCreateFromResource == nullptr)
@@ -399,6 +470,8 @@ namespace
                 else
                 {
                     IsDraggingBarrel = false;
+
+                    SaveSettings();
                 }
             }
 
@@ -449,6 +522,7 @@ namespace
         addon::Log(LOGL_INFO, "load begin");
         ConfigureImGui(api);
         addon::Log(LOGL_INFO, "imgui configured");
+        LoadSettings();
         LoadTextures();
 
         if (addon::Api != nullptr && addon::Api->GUI_Register != nullptr)
@@ -483,24 +557,15 @@ extern "C" __declspec(dllexport) AddonDefinition_t* GetAddonDef()
     AddonDef.Signature = AddonSignature;
     AddonDef.APIVersion = NEXUS_API_VERSION;
     AddonDef.Name = addon::Name;
-    AddonDef.Version = AddonVersion_t{1, 2, 0, 0};
+    AddonDef.Version = AddonVersion_t{1, 2, 1, 0};
     AddonDef.Author = "Nahar.5349";
     AddonDef.Description = "Track the Pact Supply waypoints";
     AddonDef.Load = AddonLoad;
     AddonDef.Unload = AddonUnload;
     AddonDef.Flags = AF_None;
-    AddonDef.Provider = UP_None;
-    AddonDef.UpdateLink = "";
+    AddonDef.Provider = UP_GitHub;
+    AddonDef.UpdateLink = "https://github.com/gustavotoigo-max/pact-supply-tracker";
 
     return &AddonDef;
 }
-
-
-
-
-
-
-
-
-
 
